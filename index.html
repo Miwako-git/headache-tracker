@@ -55,35 +55,37 @@
       * { background: #fff !important; color: #1a1a1a !important; -webkit-print-color-adjust: exact; }
       body { background: #fff !important; }
       body::before { display: none !important; }
-      #summaryScreen { padding: 8mm 10mm; font-size: 9px; display: block !important; background: #fff !important; }
       .s-no-print { display: none !important; }
-      @page { size: A4 landscape; margin: 10mm; }
+      @page { size: A4 landscape; margin: 8mm; }
       thead { display: table-header-group; }
       tr, td, th { page-break-inside: avoid; break-inside: avoid; }
       /* 印刷時はサマリー以外を非表示 */
       #topScreen, #trackerScreen, #doneScreen { display: none !important; }
       /* A4横向きに表を広げる */
-      #summaryScreen { max-width: 100% !important; width: 100% !important; padding: 8mm 10mm !important; }
-      .app { max-width: 100% !important; width: 100% !important; margin: 0 !important; padding: 0 !important; }
       html, body { width: 100% !important; max-width: 100% !important; margin: 0 !important; padding: 0 !important; }
+      .app { max-width: 100% !important; width: 100% !important; margin: 0 !important; padding: 0 !important; }
+      #summaryScreen { max-width: 100% !important; width: 100% !important; padding: 8mm 10mm !important; display: block !important; background: #fff !important; }
       .s-table-wrap { overflow: visible !important; }
-      #summaryScreen table { width: 100% !important; table-layout: fixed; font-size: 8px !important; }
-      #summaryScreen th, #summaryScreen td { padding: 3px 4px !important; font-size: 8px !important; word-break: break-all; }
-      /* 列幅を固定してA4横に収める */
-      #summaryScreen th:nth-child(1), #summaryScreen td:nth-child(1) { width: 10% !important; } /* 日付 */
-      #summaryScreen th:nth-child(2), #summaryScreen td:nth-child(2) { width: 5% !important; }  /* 時間帯 */
-      #summaryScreen th:nth-child(3), #summaryScreen td:nth-child(3) { width: 7% !important; }  /* 強度 */
-      #summaryScreen th:nth-child(4), #summaryScreen td:nth-child(4) { width: 5% !important; }  /* 継続 */
-      #summaryScreen th:nth-child(5), #summaryScreen td:nth-child(5) { width: 5% !important; }  /* 前兆 */
-      #summaryScreen th:nth-child(6), #summaryScreen td:nth-child(6) { width: 5% !important; }  /* 光 */
-      #summaryScreen th:nth-child(7), #summaryScreen td:nth-child(7) { width: 5% !important; }  /* 音 */
-      #summaryScreen th:nth-child(8), #summaryScreen td:nth-child(8) { width: 6% !important; }  /* 吐き気 */
-      #summaryScreen th:nth-child(9), #summaryScreen td:nth-child(9) { width: 8% !important; }  /* 生理周期 */
-      #summaryScreen th:nth-child(10), #summaryScreen td:nth-child(10) { width: 8% !important; } /* 気圧変化 */
-      #summaryScreen th:nth-child(11), #summaryScreen td:nth-child(11) { width: 6% !important; } /* 気温 */
-      #summaryScreen th:nth-child(12), #summaryScreen td:nth-child(12) { width: 6% !important; } /* 人混み */
-      #summaryScreen th:nth-child(13), #summaryScreen td:nth-child(13) { width: 10% !important; } /* 服薬 */
-      #summaryScreen th:nth-child(14), #summaryScreen td:nth-child(14) { width: 14% !important; } /* メモ */
+      /* テーブル：印刷時は100%幅で固定 */
+      #summaryScreen table { width: 100% !important; min-width: 100% !important; table-layout: fixed !important; font-size: 7.5px !important; }
+      #summaryScreen th, #summaryScreen td { padding: 3px 4px !important; font-size: 7.5px !important; word-break: break-all; }
+      /* 列幅（合計100%・重複なし） */
+      #summaryScreen th:nth-child(1),  #summaryScreen td:nth-child(1)  { width: 9%  !important; } /* 日付 */
+      #summaryScreen th:nth-child(2),  #summaryScreen td:nth-child(2)  { width: 4%  !important; } /* 時間帯 */
+      #summaryScreen th:nth-child(3),  #summaryScreen td:nth-child(3)  { width: 6%  !important; } /* 強度 */
+      #summaryScreen th:nth-child(4),  #summaryScreen td:nth-child(4)  { width: 4%  !important; } /* 継続 */
+      #summaryScreen th:nth-child(5),  #summaryScreen td:nth-child(5)  { width: 4%  !important; } /* 前兆 */
+      #summaryScreen th:nth-child(6),  #summaryScreen td:nth-child(6)  { width: 4%  !important; } /* 光 */
+      #summaryScreen th:nth-child(7),  #summaryScreen td:nth-child(7)  { width: 4%  !important; } /* 音 */
+      #summaryScreen th:nth-child(8),  #summaryScreen td:nth-child(8)  { width: 4%  !important; } /* 吐き気 */
+      #summaryScreen th:nth-child(9),  #summaryScreen td:nth-child(9)  { width: 6%  !important; } /* 生理周期 */
+      #summaryScreen th:nth-child(10), #summaryScreen td:nth-child(10) { width: 7%  !important; } /* 気圧変化 */
+      #summaryScreen th:nth-child(11), #summaryScreen td:nth-child(11) { width: 5%  !important; } /* 気温 */
+      #summaryScreen th:nth-child(12), #summaryScreen td:nth-child(12) { width: 5%  !important; } /* 天気 */
+      #summaryScreen th:nth-child(13), #summaryScreen td:nth-child(13) { width: 4%  !important; } /* 人混み */
+      #summaryScreen th:nth-child(14), #summaryScreen td:nth-child(14) { width: 4%  !important; } /* 服薬 */
+      #summaryScreen th:nth-child(15), #summaryScreen td:nth-child(15) { width: 15% !important; white-space: normal !important; word-break: break-all !important; } /* 薬名 */
+      #summaryScreen th:nth-child(16), #summaryScreen td:nth-child(16) { width: 15% !important; white-space: normal !important; word-break: break-all !important; } /* メモ */
       /* 強度カラーだけ色を残す */
       .si1 { color: #3b82f6 !important; }
       .si2 { color: #f59e0b !important; }
@@ -98,24 +100,42 @@
       thead th { background: #e8eaf0 !important; }
     }
     .s-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
-    #summaryScreen table { table-layout: fixed; min-width: 1000px; width: 100%; }
+    #summaryScreen table { table-layout: fixed; min-width: 1400px; width: 100%; }
     #summaryScreen th, #summaryScreen td { word-break: keep-all; white-space: nowrap; padding: 4px 6px; }
     /* 日付欄 */
     #summaryScreen th:nth-child(1), #summaryScreen td:nth-child(1) { min-width: 90px; width: 90px; }
-    /* 服薬欄：折り返しあり・広め */
-    #summaryScreen th:nth-child(13), #summaryScreen td:nth-child(13) {
-      white-space: normal !important;
-      word-break: break-all !important;
-      min-width: 120px;
-      width: 120px;
-      text-align: left;
+    /* 天気欄：狭め */
+    #summaryScreen th:nth-child(12), #summaryScreen td:nth-child(12) {
+      min-width: 60px;
+      width: 60px;
+      white-space: nowrap;
     }
-    /* メモ欄：折り返しあり・広め */
-    #summaryScreen th:last-child, #summaryScreen td:last-child {
+    /* 人混み欄：狭め */
+    #summaryScreen th:nth-child(13), #summaryScreen td:nth-child(13) {
+      min-width: 44px;
+      width: 44px;
+      white-space: nowrap;
+    }
+    /* 服薬欄：狭め */
+    #summaryScreen th:nth-child(14), #summaryScreen td:nth-child(14) {
+      min-width: 44px;
+      width: 44px;
+      white-space: nowrap;
+    }
+    /* 薬名欄：折り返しあり・広め */
+    #summaryScreen th:nth-child(15), #summaryScreen td:nth-child(15) {
       white-space: normal !important;
       word-break: break-all !important;
       min-width: 160px;
       width: 160px;
+      text-align: left;
+    }
+    /* メモ欄：折り返しあり・広め */
+    #summaryScreen th:nth-child(16), #summaryScreen td:nth-child(16) {
+      white-space: normal !important;
+      word-break: break-all !important;
+      min-width: 180px;
+      width: 180px;
       text-align: left;
     }
     .s-period-bar {
@@ -722,11 +742,11 @@
   <div class="top-screen" id="topScreen">
     <div style="text-align:center;">
       <div class="top-title">🩺 頭痛トラッカー</div>
-      <div class="top-subtitle">発作時に記録してください</div>
+      <div class="top-subtitle">頭痛・体調を記録してください</div>
       <div style="font-size:11px; color:var(--text2); margin-top:4px;">※ Google Apps Scriptで動作する安全なアプリです</div>
     </div>
     <button class="top-btn top-btn-main" onclick="startTracker()">
-      ⚡ 頭痛を記録する
+      ⚡ 頭痛を記録・修正する
     </button>
     <button class="top-btn top-btn-period" onclick="openPeriodModal()">
       🩸 生理開始日を記録する
@@ -983,10 +1003,10 @@
         <div class="card">
           <div class="field-label">🌤️ 天気</div>
           <div class="btn-group" id="weather_code">
-            <button class="btn-option" data-val="晴れ" onclick="selectBtn(this,'weather_code')">☀️ 晴れ</button>
-            <button class="btn-option" data-val="曇り" onclick="selectBtn(this,'weather_code')">☁️ 曇り</button>
-            <button class="btn-option" data-val="雨" onclick="selectBtn(this,'weather_code')">🌧️ 雨</button>
-            <button class="btn-option" data-val="雪" onclick="selectBtn(this,'weather_code')">❄️ 雪</button>
+            <button class="btn-option" data-val="sunny" onclick="selectBtn(this,'weather_code')">☀️ 晴れ</button>
+            <button class="btn-option" data-val="cloudy" onclick="selectBtn(this,'weather_code')">☁️ 曇り</button>
+            <button class="btn-option" data-val="rain" onclick="selectBtn(this,'weather_code')">🌧️ 雨</button>
+            <button class="btn-option" data-val="snow" onclick="selectBtn(this,'weather_code')">❄️ 雪</button>
           </div>
         </div>
       </div>
@@ -1109,12 +1129,12 @@
               <tr>
                 <th>日付</th><th>時間帯</th><th>強度</th><th>継続</th>
                 <th>前兆</th><th>光</th><th>音</th><th>吐き気</th>
-                <th>生理周期</th><th>気圧変化</th><th>気温</th>
-                <th>人混み</th><th>服薬</th><th>メモ</th>
+                <th>生理周期</th><th>気圧変化</th><th>気温</th><th>天気</th>
+                <th>人混み</th><th>服薬</th><th>薬名</th><th>メモ</th>
               </tr>
             </thead>
             <tbody id="s-recordsBody">
-              <tr><td colspan="14" class="s-no-data">データなし</td></tr>
+              <tr><td colspan="15" class="s-no-data">データなし</td></tr>
             </tbody>
           </table>
         </div>
@@ -1176,6 +1196,17 @@
     updateNav();
   };
 
+  // ===== XSS対策：テキスト表示時に必ず通す =====
+  function escapeHtml(str) {
+    if(str === null || str === undefined) return '';
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  }
+
   // ===== サマリー =====
   let sAllRecords = [];
   let sDataLoaded = false;
@@ -1203,7 +1234,7 @@
           document.getElementById('s-loading').style.display = 'none';
           if(!data.success) {
             document.getElementById('s-loading').style.display = 'flex';
-            document.getElementById('s-loading').innerHTML = `<div style="color:#ef4444;">${data.error}</div>`;
+            document.getElementById('s-loading').innerHTML = `<div style="color:#ef4444;">${escapeHtml(String(data.error||''))}</div>`;
             return;
           }
           sAllRecords = data.records;
@@ -1212,7 +1243,7 @@
           sRenderReport('1m');
         })
         .withFailureHandler(err => {
-          document.getElementById('s-loading').innerHTML = `<div style="color:#ef4444;">読み込み失敗: ${err}</div>`;
+          document.getElementById('s-loading').innerHTML = `<div style="color:#ef4444;">読み込み失敗: ${escapeHtml(String(err||''))}</div>`;
         })
         .getSummaryData();
     }
@@ -1253,7 +1284,8 @@
   const S_LEVEL3     = { 0:'なし', 1:'少し', 2:'つらい', 3:'最悪' };
   const S_NAUSEA     = { 0:'なし', 1:'少し', 2:'つらい', 3:'吐いた' };
   const S_TIME_LABEL = { 8:'朝', 12:'昼', 17:'夕', 21:'晩' };
-  const S_BOOL       = v => (v===true||v==='TRUE'||v==='true') ? 'あり' : 'なし';
+  const S_WEATHER    = { sunny:'☀️ 晴れ', cloudy:'☁️ 曇り', rain:'🌧️ 雨', snow:'❄️ 雪', thunder:'⛈️ 雷雨', unknown:'—' };
+  const S_BOOL       = v => escapeHtml((v===true||v==='TRUE'||v==='true') ? 'あり' : 'なし');
   const siClass      = v => 'si'+Math.min(5,Math.max(0,Number(v)));
 
   function sRenderReport(mode) {
@@ -1265,7 +1297,7 @@
 
     if(records.length === 0) {
       ['ss-total','ss-intensity','ss-duration','ss-med'].forEach(id => document.getElementById(id).textContent = '—');
-      document.getElementById('s-recordsBody').innerHTML = '<tr><td colspan="14" class="s-no-data">この期間のデータなし</td></tr>';
+      document.getElementById('s-recordsBody').innerHTML = '<tr><td colspan="15" class="s-no-data">この期間のデータなし</td></tr>';
       return;
     }
 
@@ -1285,25 +1317,27 @@
     document.getElementById('s-recordsBody').innerHTML = records.map(r => {
       const timeLabel = S_TIME_LABEL[Number(r.time_of_day)] || '—';
       const pc = (r.pressure_change_24h !== '' && r.pressure_change_24h !== null) ? Number(r.pressure_change_24h) : null;
-      const pressureCell = pc !== null ? `<span class="${pc<=-5?'s-p-warn':''}">${pc>0?'+':''}${pc} hPa</span>` : '—';
+      const pressureCell = pc !== null ? `<span class="${pc<=-5?'s-p-warn':''}">${escapeHtml(pc>0?'+'+String(pc):String(pc))} hPa</span>` : '—';
       const days = r.days_since_period ? Number(r.days_since_period) : null;
-      const periodCell = days !== null ? `<span class="${days>=25||days<=3?'s-period-near':''}">${days}日目</span>` : '—';
+      const periodCell = days !== null ? `<span class="${days>=25||days<=3?'s-period-near':''}">${escapeHtml(String(days))}日目</span>` : '—';
 
       return `<tr>
-        <td>${r.date.replace(/-/g,'/')}</td>
-        <td>${timeLabel}</td>
-        <td class="${siClass(r.headache_intensity)}">${S_INTENSITY[r.headache_intensity]||r.headache_intensity}</td>
-        <td>${r.duration_hours?r.duration_hours+'h':'—'}</td>
+        <td>${escapeHtml(r.date.replace(/-/g,'/'))}</td>
+        <td>${escapeHtml(timeLabel)}</td>
+        <td class="${siClass(r.headache_intensity)}">${escapeHtml(S_INTENSITY[r.headache_intensity]||String(r.headache_intensity))}</td>
+        <td>${r.duration_hours?escapeHtml(String(r.duration_hours))+'h':'—'}</td>
         <td>${S_BOOL(r.aura)}</td>
-        <td>${S_LEVEL3[r.photo_sensitivity]||'—'}</td>
-        <td>${S_LEVEL3[r.sound_sensitivity]||'—'}</td>
-        <td>${S_NAUSEA[r.nausea]||'—'}</td>
+        <td>${escapeHtml(S_LEVEL3[r.photo_sensitivity]||'—')}</td>
+        <td>${escapeHtml(S_LEVEL3[r.sound_sensitivity]||'—')}</td>
+        <td>${escapeHtml(S_NAUSEA[r.nausea]||'—')}</td>
         <td>${periodCell}</td>
         <td>${pressureCell}</td>
-        <td>${r.temperature_c?r.temperature_c+'℃':'—'}</td>
+        <td>${r.temperature_c?escapeHtml(String(r.temperature_c))+'℃':'—'}</td>
+        <td>${escapeHtml(S_WEATHER[r.weather_code]||'—')}</td>
         <td>${S_BOOL(r.people_crowd)}</td>
-        <td style="text-align:left;">${S_BOOL(r.medication_taken)}${r.medication_type?'（'+r.medication_type+'）':''}</td>
-        <td style="text-align:left;max-width:80px;word-break:break-all;">${r.memo||''}</td>
+        <td>${S_BOOL(r.medication_taken)}</td>
+        <td style="text-align:left;word-break:break-all;">${r.medication_type?escapeHtml(String(r.medication_type)):'—'}</td>
+        <td style="text-align:left;word-break:break-all;">${escapeHtml(r.memo)}</td>
       </tr>`;
     }).join('');
   }
@@ -1384,7 +1418,7 @@
     const days = Math.floor((selectedDate - start) / (1000*60*60*24)) + 1;
     formData.days_since_period = days;
     if(days >= 25) {
-      el.innerHTML = `<span style="color:#f9a8d4;">⚠️ ${days}日目（生理前ゾーン！頭痛注意）</span>`;
+      el.innerHTML = `<span style="color:#f9a8d4;">⚠️ ${escapeHtml(String(days))}日目（生理前ゾーン！頭痛注意）</span>`;
     } else {
       el.textContent = `${days}日目`;
     }
@@ -1412,6 +1446,19 @@
 
   function nextStep() {
     if(currentStep >= TOTAL_STEPS) return;
+
+    // STEP1から次へ進む時、過去日付で時間帯未選択なら警告
+    if(currentStep === 1) {
+      const today = new Date();
+      const todayStr = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
+      const selectedDate = document.getElementById('date').value;
+      const isPast = selectedDate && selectedDate !== todayStr;
+      if(isPast && !formData.time_of_day) {
+        alert('過去の日付の場合は時間帯を選択してください');
+        return;
+      }
+    }
+
     document.querySelector(`.step[data-step="${currentStep}"]`).classList.remove('active');
     currentStep++;
     document.querySelector(`.step[data-step="${currentStep}"]`).classList.add('active');
@@ -1641,9 +1688,12 @@
     formData.sleep_hours = document.getElementById('sleep_hours').value;
     formData.medication_type = document.getElementById('medication_type').value;
     formData.memo = document.getElementById('memo').value;
-    formData.alcohol_type = Array.isArray(formData.alcohol_type)
-      ? formData.alcohol_type.join(',')
-      : formData.alcohol_type;
+    // alcohol_typeは必ずカンマ区切り文字列に統一
+    if(Array.isArray(formData.alcohol_type)) {
+      formData.alcohol_type = formData.alcohol_type.join(',');
+    } else if(typeof formData.alcohol_type !== 'string') {
+      formData.alcohol_type = String(formData.alcohol_type || 'None');
+    }
 
     if(!formData.date) { alert('日付を入力してください'); return; }
     if(formData.headache_intensity === '') { alert('頭痛の強さを選んでください（STEP2）'); return; }
