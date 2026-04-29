@@ -8,9 +8,7 @@ const SHEET_NAME = 'MigraineLog';
 function doGet(e) {
   const page = e && e.parameter && e.parameter.page;
   if(page === 'summary') {
-    const template = HtmlService.createTemplateFromFile('summary');
-    template.appUrl = ScriptApp.getService().getUrl();
-    return template.evaluate()
+    return HtmlService.createHtmlOutputFromFile('summary')
       .setTitle('🩺 頭痛サマリーレポート')
       .addMetaTag('viewport', 'width=device-width, initial-scale=1.0')
       .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
@@ -21,6 +19,37 @@ function doGet(e) {
     .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
 }
 
+// 🔧 行データ配列を作る共通関数（saveRecord・updateRecord両方で使う）
+function makeRowData(data) {
+  const now = new Date();
+  return [
+    data.date,
+    Utilities.formatDate(now, Session.getScriptTimeZone(), 'yyyy-MM-dd HH:mm:ss'),
+    data.time_of_day || '',
+    data.duration_hours, data.headache_intensity, data.aura,
+    data.photo_sensitivity, data.sound_sensitivity, data.nausea, data.vertigo, data.spasm,
+    data.sleep_hours, data.sleep_quality, data.stress, data.stress_level,
+    data.medication_taken, data.medication_type, data.alcohol_type,
+    data.people_crowd, data.days_since_period,
+    data.pressure_hpa, data.pressure_change_24h, data.temperature_c, data.humidity, data.weather_code,
+    data.moon_age, data.moon_phase, data.memo
+  ];
+}
+
+// 📋 シートヘッダー定義
+const SHEET_HEADERS = [
+  'date', 'created_at', 'time_of_day', 'duration_hours',
+  'headache_intensity', 'aura',
+  'photo_sensitivity', 'sound_sensitivity', 'nausea', 'vertigo', 'spasm',
+  'sleep_hours', 'sleep_quality', 'stress', 'stress_level',
+  'medication_taken', 'medication_type',
+  'alcohol_type',
+  'people_crowd', 'days_since_period',
+  'pressure_hpa', 'pressure_change_24h', 'temperature_c', 'humidity', 'weather_code',
+  'moon_age', 'moon_phase',
+  'memo'
+];
+
 // 💾 頭痛記録を新規追加する関数
 function saveRecord(data) {
   try {
@@ -29,37 +58,11 @@ function saveRecord(data) {
 
     if (!sheet) {
       sheet = ss.insertSheet(SHEET_NAME);
-      const headers = [
-        'date', 'created_at', 'time_of_day', 'duration_hours',
-        'headache_intensity', 'aura',
-        'photo_sensitivity', 'sound_sensitivity', 'nausea', 'vertigo', 'spasm',
-        'sleep_hours', 'sleep_quality', 'stress', 'stress_level',
-        'medication_taken', 'medication_type',
-        'alcohol_type',
-        'people_crowd', 'days_since_period',
-        'pressure_hpa', 'pressure_change_24h', 'temperature_c', 'humidity', 'weather_code',
-        'moon_age', 'moon_phase',
-        'memo'
-      ];
-      sheet.appendRow(headers);
-      sheet.getRange(1, 1, 1, headers.length).setFontWeight('bold');
+      sheet.appendRow(SHEET_HEADERS);
+      sheet.getRange(1, 1, 1, SHEET_HEADERS.length).setFontWeight('bold');
     }
 
-    const now = new Date();
-    const row = [
-      data.date,
-      Utilities.formatDate(now, Session.getScriptTimeZone(), 'yyyy-MM-dd HH:mm:ss'),
-      data.time_of_day || '',
-      data.duration_hours, data.headache_intensity, data.aura,
-      data.photo_sensitivity, data.sound_sensitivity, data.nausea, data.vertigo, data.spasm,
-      data.sleep_hours, data.sleep_quality, data.stress, data.stress_level,
-      data.medication_taken, data.medication_type, data.alcohol_type,
-      data.people_crowd, data.days_since_period,
-      data.pressure_hpa, data.pressure_change_24h, data.temperature_c, data.humidity, data.weather_code,
-      data.moon_age, data.moon_phase, data.memo
-    ];
-
-    sheet.appendRow(row);
+    sheet.appendRow(makeRowData(data));
     return { success: true };
   } catch (e) {
     return { success: false, error: e.message };
@@ -135,20 +138,7 @@ function updateRecord(rowIndex, data) {
     const sheet = ss.getSheetByName(SHEET_NAME);
     if(!sheet) return { success: false, error: 'シートが見つかりません' };
 
-    const now = new Date();
-    const row = [
-      data.date,
-      Utilities.formatDate(now, Session.getScriptTimeZone(), 'yyyy-MM-dd HH:mm:ss'),
-      data.time_of_day || '',
-      data.duration_hours, data.headache_intensity, data.aura,
-      data.photo_sensitivity, data.sound_sensitivity, data.nausea, data.vertigo, data.spasm,
-      data.sleep_hours, data.sleep_quality, data.stress, data.stress_level,
-      data.medication_taken, data.medication_type, data.alcohol_type,
-      data.people_crowd, data.days_since_period,
-      data.pressure_hpa, data.pressure_change_24h, data.temperature_c, data.humidity, data.weather_code,
-      data.moon_age, data.moon_phase, data.memo
-    ];
-
+    const row = makeRowData(data);
     sheet.getRange(rowIndex, 1, 1, row.length).setValues([row]);
     return { success: true };
   } catch(e) {
@@ -189,7 +179,7 @@ function getPastWeatherAndMoon(dateStr, lat, lon, targetHour) {
       humidity: humidity,
       pressure_hpa: pressure,
       pressure_change_24h: pressureChange,
-      weather_code: getWeatherJa(weatherCode),
+      weather_code: getWeatherEn(weatherCode),
       moon_age: Math.round(moonAge * 10) / 10,
       moon_phase: moonPhase
     };
@@ -229,7 +219,7 @@ function getWeatherAndMoon(lat, lon) {
       humidity: weather.relative_humidity_2m,
       pressure_hpa: Math.round(weather.surface_pressure * 10) / 10,
       pressure_change_24h: pressureChange,
-      weather_code: getWeatherJa(weather.weather_code),
+      weather_code: getWeatherEn(weather.weather_code),
       moon_age: Math.round(moonAge * 10) / 10,
       moon_phase: moonPhase
     };
@@ -261,19 +251,92 @@ function getLastPeriodDate() {
 }
 
 // 🩸 生理開始日をPeriodLogシートに保存する関数
+// 保存後、その生理日以降のMigraineLogのdays_since_periodを自動再計算する
 function savePeriodDate(dateStr) {
   try {
     const ss = SpreadsheetApp.getActiveSpreadsheet();
-    let sheet = ss.getSheetByName('PeriodLog');
-    if(!sheet) {
-      sheet = ss.insertSheet('PeriodLog');
-      sheet.appendRow(['date', 'recorded_at']);
-      sheet.getRange(1,1,1,2).setFontWeight('bold');
+
+    // PeriodLogに保存
+    let periodSheet = ss.getSheetByName('PeriodLog');
+    if(!periodSheet) {
+      periodSheet = ss.insertSheet('PeriodLog');
+      periodSheet.appendRow(['date', 'recorded_at']);
+      periodSheet.getRange(1,1,1,2).setFontWeight('bold');
     }
-    sheet.appendRow([dateStr, Utilities.formatDate(new Date(), Session.getScriptTimeZone(), 'yyyy-MM-dd HH:mm:ss')]);
+    periodSheet.appendRow([dateStr, Utilities.formatDate(new Date(), Session.getScriptTimeZone(), 'yyyy-MM-dd HH:mm:ss')]);
+
+    // MigraineLogの再計算
+    recalcDaysSincePeriod(dateStr, ss);
+
     return { success: true };
   } catch(e) {
     return { success: false, error: e.message };
+  }
+}
+
+// 🔄 指定した生理開始日以降のMigraineLogのdays_since_periodを再計算する関数
+// PeriodLog全履歴を参照して、各記録日に最も近い（かつ記録日以前の）生理開始日を使う
+function recalcDaysSincePeriod(newPeriodDateStr, ss) {
+  try {
+    const migraineSheet = ss.getSheetByName(SHEET_NAME);
+    if(!migraineSheet) return;
+    const lastRow = migraineSheet.getLastRow();
+    if(lastRow < 2) return;
+
+    // PeriodLog全履歴を取得
+    const periodSheet = ss.getSheetByName('PeriodLog');
+    if(!periodSheet) return;
+    const periodLastRow = periodSheet.getLastRow();
+    if(periodLastRow < 2) return;
+    const periodDates = periodSheet.getRange(2, 1, periodLastRow - 1, 1).getValues()
+      .map(r => {
+        const d = r[0] instanceof Date ? r[0] : new Date(r[0]);
+        return d;
+      })
+      .filter(d => !isNaN(d.getTime()))
+      .sort((a, b) => a - b); // 昇順ソート
+
+    // 新しい生理日以降の記録のみ対象（それより前は影響なし）
+    const newPeriodDate = new Date(newPeriodDateStr);
+    const allData = migraineSheet.getRange(2, 1, lastRow - 1, 28).getValues();
+
+    const updates = [];
+    for(let i = 0; i < allData.length; i++) {
+      const row = allData[i];
+      if(!row[0]) continue;
+
+      // 記録日
+      const recordDate = row[0] instanceof Date ? row[0] : new Date(row[0]);
+      if(isNaN(recordDate.getTime())) continue;
+
+      // 新しい生理日以降の記録のみ再計算
+      if(recordDate < newPeriodDate) continue;
+
+      // 記録日以前で最も近い生理開始日を探す
+      let closestPeriod = null;
+      for(let j = periodDates.length - 1; j >= 0; j--) {
+        if(periodDates[j] <= recordDate) {
+          closestPeriod = periodDates[j];
+          break;
+        }
+      }
+      if(!closestPeriod) continue;
+
+      // days_since_period再計算
+      const diffDays = Math.floor((recordDate - closestPeriod) / (1000*60*60*24)) + 1;
+
+      // T列（20列目 = インデックス19）がdays_since_period
+      updates.push({ rowNum: i + 2, days: diffDays });
+    }
+
+    // 一括更新
+    updates.forEach(u => {
+      migraineSheet.getRange(u.rowNum, 20).setValue(u.days);
+    });
+
+    return { updated: updates.length };
+  } catch(e) {
+    return { error: e.message };
   }
 }
 
@@ -298,14 +361,14 @@ function getMoonPhase(age) {
   return '新月';
 }
 
-// ☀️ 天気コードを日本語に変換する関数
-function getWeatherJa(code) {
-  if (code === 0) return '晴れ';
-  if (code <= 3) return '曇り';
-  if (code <= 67) return '雨';
-  if (code <= 77) return '雪';
-  if (code <= 99) return '雷雨';
-  return '不明';
+// ☀️ 天気コードを英語に変換する関数（スプシ保存用・解析しやすい形式）
+function getWeatherEn(code) {
+  if (code === 0) return 'sunny';
+  if (code <= 3) return 'cloudy';
+  if (code <= 67) return 'rain';
+  if (code <= 77) return 'snow';
+  if (code <= 99) return 'thunder';
+  return 'unknown';
 }
 
 
