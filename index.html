@@ -1170,6 +1170,16 @@
     memo: ''
   };
 
+  // ===== localStorage安全ラッパー =====
+  // GASのiframe（特にiOS Safari）ではlocalStorageへのアクセスで例外が投げられ、
+  // それ以降の処理が全部止まることがある。必ずこのラッパー経由で読み書きする。
+  function safeGetLocal(key) {
+    try { return localStorage.getItem(key) || ''; } catch(e) { return ''; }
+  }
+  function safeSetLocal(key, val) {
+    try { localStorage.setItem(key, val); } catch(e) {}
+  }
+
   // ===== 初期化 =====
   window.onload = function() {
     const today = new Date();
@@ -1344,7 +1354,8 @@
 
   // ===== 生理周期管理 =====
   function loadPeriodStatus() {
-    const cached = localStorage.getItem('lastPeriodDate') || '';
+    // localStorageは安全ラッパー経由で読む（GAS iframeで例外を投げても処理を止めない）
+    const cached = safeGetLocal('lastPeriodDate');
     if(cached) {
       periodDateStr = cached;
       updatePeriodStatus();
@@ -1356,8 +1367,12 @@
                     (dateStr instanceof Date ? dateStr.toISOString().split('T')[0] : String(dateStr));
           if(d && d.length >= 8) {
             periodDateStr = d;
-            localStorage.setItem('lastPeriodDate', d);
+            safeSetLocal('lastPeriodDate', d);
             updatePeriodStatus();
+            // トラッカー画面を開いている最中なら生理周期表示も更新（保険）
+            if(document.getElementById('trackerScreen').style.display === 'block') {
+              updatePeriodDaysDisplay();
+            }
           } else {
             updatePeriodStatus();
           }
@@ -1387,7 +1402,7 @@
   function savePeriodDate() {
     const d = document.getElementById('periodDate').value;
     if(!d) { alert('日付を選択してください'); return; }
-    localStorage.setItem('lastPeriodDate', d);
+    safeSetLocal('lastPeriodDate', d);
     periodDateStr = d;
     updatePeriodStatus();
     closePeriodModal();
@@ -1397,8 +1412,23 @@
   function startTracker() {
     document.getElementById('topScreen').style.display = 'none';
     document.getElementById('trackerScreen').style.display = 'block';
-    updatePeriodDaysDisplay();
     window.scrollTo(0,0);
+
+    // まずキャッシュ値があれば即座に仮表示（待ち時間中の見た目用）
+    updatePeriodDaysDisplay();
+
+    // ★重要★ キャッシュの古い生理日を掴み続けないよう、
+    // 記録開始のたびに必ずサーバーから「最新の生理日」を取り直して確定する。
+    google.script.run
+      .withSuccessHandler(dateStr => {
+        if(dateStr && String(dateStr).length >= 8) {
+          periodDateStr = String(dateStr).substring(0, 10);
+          safeSetLocal('lastPeriodDate', periodDateStr);
+        }
+        updatePeriodDaysDisplay();
+      })
+      .withFailureHandler(() => { updatePeriodDaysDisplay(); })
+      .getLastPeriodDate();
   }
 
   function updatePeriodDaysDisplay() {
@@ -1408,6 +1438,7 @@
       el.style.color = 'var(--text2)';
       return;
     }
+    el.style.color = 'var(--text)';
     // 選択中の日付基準で計算（過去入力に対応）
     const selectedDate = document.getElementById('date') && document.getElementById('date').value
       ? new Date(document.getElementById('date').value)
@@ -1464,6 +1495,8 @@
     document.querySelector(`.step[data-step="${currentStep}"]`).classList.add('active');
     window.scrollTo(0, 0);
     updateNav();
+    // STEP5に来たら生理周期を最新化、STEP6で環境データ取得
+    if(currentStep === 5) updatePeriodDaysDisplay();
     if(currentStep === 6) autoFetchEnv();
   }
 
