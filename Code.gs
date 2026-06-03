@@ -235,6 +235,9 @@ function getWeatherAndMoon(lat, lon) {
 }
 
 // 🩸 最後に記録した生理開始日をスプシから取得する関数
+// 【バグ修正】new Date(val) が Invalid Date になる問題を解消。
+// 【強化】「最終行」ではなく「日付が最大（=最新）の行」を返す。
+//   後から古い日付を追記しても、常に一番新しい生理日を返せるようにするため。
 function getLastPeriodDate() {
   try {
     const ss = SpreadsheetApp.getActiveSpreadsheet();
@@ -242,9 +245,20 @@ function getLastPeriodDate() {
     if(!sheet) return '';
     const lastRow = sheet.getLastRow();
     if(lastRow < 2) return '';
-    const val = sheet.getRange(lastRow, 1).getValue();
-    if(!val) return '';
-    return Utilities.formatDate(new Date(val), 'Asia/Tokyo', 'yyyy-MM-dd');
+
+    // 全履歴のdate列を取得し、日付が最大（最新）のものを探す
+    const values = sheet.getRange(2, 1, lastRow - 1, 1).getValues();
+    let latest = null;
+    for(let i = 0; i < values.length; i++) {
+      const v = values[i][0];
+      if(!v) continue;
+      // Date型ならそのまま、文字列なら先頭10文字をDate化（タイムゾーンずれ防止のため日本時間0時で解釈）
+      const d = v instanceof Date ? v : new Date(String(v).substring(0, 10) + 'T00:00:00+09:00');
+      if(isNaN(d.getTime())) continue;
+      if(latest === null || d > latest) latest = d;
+    }
+    if(latest === null) return '';
+    return Utilities.formatDate(latest, 'Asia/Tokyo', 'yyyy-MM-dd');
   } catch(e) {
     return '';
   }
@@ -252,6 +266,7 @@ function getLastPeriodDate() {
 
 // 🩸 生理開始日をPeriodLogシートに保存する関数
 // 保存後、その生理日以降のMigraineLogのdays_since_periodを自動再計算する
+// 【バグ修正】文字列ではなくDateオブジェクトで保存し、読み込み時の型ブレを防ぐ。
 function savePeriodDate(dateStr) {
   try {
     const ss = SpreadsheetApp.getActiveSpreadsheet();
@@ -263,7 +278,9 @@ function savePeriodDate(dateStr) {
       periodSheet.appendRow(['date', 'recorded_at']);
       periodSheet.getRange(1,1,1,2).setFontWeight('bold');
     }
-    periodSheet.appendRow([dateStr, Utilities.formatDate(new Date(), Session.getScriptTimeZone(), 'yyyy-MM-dd HH:mm:ss')]);
+    // 日本時間の0時としてDateオブジェクトで保存（文字列保存だと読み込み時にブレるため）
+    const periodDate = new Date(dateStr + 'T00:00:00+09:00');
+    periodSheet.appendRow([periodDate, Utilities.formatDate(new Date(), Session.getScriptTimeZone(), 'yyyy-MM-dd HH:mm:ss')]);
 
     // MigraineLogの再計算
     recalcDaysSincePeriod(dateStr, ss);
